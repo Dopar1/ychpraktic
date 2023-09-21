@@ -1,94 +1,63 @@
-import sys # импортируем модуль sys
+import sys
 
-from PyQt5.QtCore import QPoint
-from PyQt5.QtGui import QPixmap, QRegion
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QLineEdit, QVBoxLayout,
-                             QHBoxLayout, QWidget, QFileDialog, QMessageBox, QScrollArea, QLabel, QGridLayout, QCheckBox, QTextEdit)
+from Zadacha1 import LogicTable
+from Zadacha2 import LogicTable2
+from Zadacha3 import LogicTable3
+from Zadacha4 import LogicTable4
+from Zadacha5 import LogicTable5
 
-class LogicHelperApp(QMainWindow): 
-    def __init__(self): 
-        super().__init__()  
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QPushButton,
+    QVBoxLayout, QWidget
+)
 
-        self.setWindowTitle("Logic Helper")   
 
-        main_layout = QVBoxLayout()  
+class CaseMenu(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-        self.task_description = QTextEdit() 
-        self.task_description.setPlaceholderText("Введите задачу здесь...")
-        main_layout.addWidget(self.task_description)   
+        self.setWindowTitle('Меню задач')
 
-        button_layout = QHBoxLayout()   
+        layout = QVBoxLayout()
+        self.task1 = None
+        self.task2 = None
+        self.task3 = None
+        self.task4 = None
+        self.task5 = None
 
-        self.add_variable_a_button = QPushButton("+ Создать переменную A")
-        self.add_variable_a_button.clicked.connect(self.add_variable_a) 
-        button_layout.addWidget(self.add_variable_a_button) 
 
-        self.add_variable_b_button = QPushButton("+ Создать переменную B")
-        self.add_variable_b_button.clicked.connect(self.add_variable_b)
-        button_layout.addWidget(self.add_variable_b_button)
 
-        main_layout.addLayout(button_layout)
+        for i in range(1, 6):
+            btn = QPushButton(f'Задача {i}')
+            btn.clicked.connect(lambda checked, i=i: self.open_task(i))
+            layout.addWidget(btn)
 
-        self.grid_layout = QGridLayout()
-        main_layout.addLayout(self.grid_layout)
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
 
-        self.save_button = QPushButton("Сохранить решение")
-        self.save_button.clicked.connect(self.save_solution)
-        main_layout.addWidget(self.save_button)
+    def open_task(self, task_num):
+        if task_num == 1:
+            self.task1 = LogicTable()
+            self.task1.show()
+        elif task_num == 2:
+            self.task2 = LogicTable2()
+            self.task2.show()
+        elif task_num == 3:
+            self.task3 = LogicTable3()
+            self.task3.show()
+        elif task_num == 4:
+            self.task4 = LogicTable4()
+            self.task4.show()
+        elif task_num == 5:
+            self.task5 = LogicTable5()
+            self.task5.show()
 
-        central_widget = QWidget() 
-        central_widget.setLayout(main_layout)   
 
-        scroll_area = QScrollArea() 
-        scroll_area.setWidgetResizable(True)  
-        scroll_area.setWidget(central_widget)
+app = QApplication(sys.argv)
 
-        self.setCentralWidget(scroll_area)  
+menu = CaseMenu()
+menu.show()
 
-        self.variable_a_count = 0 
-        self.variable_b_count = 0  
-
-    def add_variable_a(self):
-        variable_a_input = QLineEdit()
-        variable_a_input.setPlaceholderText(f"Введите переменную A{self.variable_a_count + 1} здесь...")
-        self.grid_layout.addWidget(variable_a_input, self.variable_a_count + 1, 0)
-        self.variable_a_count += 1
-
-        for i in range(self.variable_b_count):
-            checkbox = QCheckBox()
-            self.grid_layout.addWidget(checkbox, self.variable_a_count, i + 1)
-
-    def add_variable_b(self):  
-        variable_b_input = QLineEdit()  
-        variable_b_input.setPlaceholderText(f"Введите переменную B{self.variable_b_count + 1} здесь...")
-        self.grid_layout.addWidget(variable_b_input, 0, self.variable_b_count + 1) 
-        self.variable_b_count += 1  
-
-        for i in range(self.variable_a_count):
-            checkbox = QCheckBox()
-            self.grid_layout.addWidget(checkbox, i + 1, self.variable_b_count) 
-
-    def save_solution(self):  
-        file_name, _ = QFileDialog.getSaveFileName(self, "Сохранить решение", "", "PNG файл (*.png)") 
-        if file_name:  
-            if not file_name.endswith(".png"): 
-                file_name += ".png"
-
-           
-            screenshot = QPixmap(self.size())
-            self.render(screenshot, QPoint(), QRegion(self.rect()))
-
-            
-            screenshot.save(file_name, "PNG")
-            QMessageBox.information(self, "Сохранено", f"Решение сохранено в файле {file_name}")  
-        else:
-            QMessageBox.warning(self, "Ошибка", "Не удалось сохранить решение") 
-
-def main():
-    app = QApplication(sys.argv)  
-    logic_helper_app = LogicHelperApp()
-    logic_helper_app.show()  
-    sys.exit(app.exec_()) 
-
-if __name__ == "__main__": 
-    main()
+app.exec_()
