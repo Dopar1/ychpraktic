@@ -1,5 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QRadioButton, QButtonGroup
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QRadioButton, QButtonGroup, QFileDialog
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QTableWidget, QTableWidgetItem,
@@ -14,6 +16,7 @@ class LogicTable3(QWidget):
         self.initUI()
         # При нажатии на кнопку
         self.check_btn.clicked.connect(self.check_answers)
+        self.save_btn.clicked.connect(self.save_screenshot)
 
 
     def initUI(self):
@@ -46,6 +49,56 @@ class LogicTable3(QWidget):
         self.table.setItem(3, 0, QTableWidgetItem("Третий"))
         self.table.setItem(4, 0, QTableWidgetItem("Четвертый"))
         self.table.setItem(5, 0, QTableWidgetItem("Пятый"))
+
+        # Устанавливаем "Рустам" только для чтения
+        item = QTableWidgetItem("Рустам")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 1, item)
+
+        # Устанавливаем "Эдуард" только для чтения
+        item = QTableWidgetItem("Эдуард")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 2, item)
+
+        # Устанавливаем "Карина" только для чтения
+        item = QTableWidgetItem("Карина")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 3, item)
+
+        # Устанавливаем "Галина" только для чтения
+        item = QTableWidgetItem("Галина")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 4, item)
+
+        # Устанавливаем "Яков" только для чтения
+        item = QTableWidgetItem("Яков")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 5, item)
+
+        # Устанавливаем "Первый" только для чтения
+        item = QTableWidgetItem("Первый")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(1, 0, item)
+
+        # Устанавливаем "Второй" только для чтения
+        item = QTableWidgetItem("Второй")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(2, 0, item)
+
+        # Устанавливаем "Третий" только для чтения
+        item = QTableWidgetItem("Третий")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(3, 0, item)
+
+        # Устанавливаем "Четвертый" только для чтения
+        item = QTableWidgetItem("Четвертый")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(4, 0, item)
+
+        # Устанавливаем "Пятый" только для чтения
+        item = QTableWidgetItem("Пятый")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(5, 0, item)
 
         # Создаем группы для каждой строки
         self.group1 = QButtonGroup()
@@ -162,6 +215,8 @@ class LogicTable3(QWidget):
 
         # Кнопка проверки
         self.check_btn = QPushButton("Проверить")
+        # Кнопка Сохранения
+        self.save_btn = QPushButton("Сохранить")
 
         # Размещаем в вертикальном layout
         layout = QVBoxLayout()
@@ -173,10 +228,11 @@ class LogicTable3(QWidget):
         table_layout = QHBoxLayout()
         table_layout.addWidget(self.table)
         table_layout.addWidget(self.check_btn)
+        table_layout.addWidget(self.save_btn)
 
         layout.addLayout(table_layout)
 
-        self.resize(750, 400)
+        self.resize(820, 400)
         self.setWindowTitle("Логическая задача")
         self.setLayout(layout)
 
@@ -192,4 +248,15 @@ class LogicTable3(QWidget):
             QMessageBox.information(self, "Результат", "Ответ верный!")
         else:
             QMessageBox.warning(self, "Результат", "Ответ неверный")
+
+    def save_screenshot(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+        file_name, _ = QFileDialog.getSaveFileName(self, "Сохранить скриншот", "",
+                                                   "Images (*.png *.jpg);;All Files (*)", options=options)
+
+        if file_name:
+            screenshot = QPixmap(self.size())
+            self.render(screenshot)
+            screenshot.save(file_name, "PNG")
 

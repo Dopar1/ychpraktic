@@ -1,5 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QRadioButton, QButtonGroup
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QRadioButton, QButtonGroup, QFileDialog
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QTableWidget, QTableWidgetItem,
@@ -14,6 +16,7 @@ class LogicTable4(QWidget):
         self.initUI()
         # При нажатии на кнопку
         self.check_btn.clicked.connect(self.check_answers)
+        self.save_btn.clicked.connect(self.save_screenshot)
 
     def initUI(self):
         # Текст задачи
@@ -37,6 +40,36 @@ class LogicTable4(QWidget):
         self.table.setItem(1, 0, QTableWidgetItem("Денис"))
         self.table.setItem(2, 0, QTableWidgetItem("Артем"))
         self.table.setItem(3, 0, QTableWidgetItem("Илья"))
+
+        # Устанавливаем "Золотая рыбка" только для чтения
+        item = QTableWidgetItem("Золотая рыбка")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 1, item)
+
+        # Устанавливаем "Черепаха" только для чтения
+        item = QTableWidgetItem("Черепаха")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 2, item)
+
+        # Устанавливаем "Кошка" только для чтения
+        item = QTableWidgetItem("Кошка")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 3, item)
+
+        # Устанавливаем "Денис" только для чтения
+        item = QTableWidgetItem("Денис")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(1, 0, item)
+
+        # Устанавливаем "Артем" только для чтения
+        item = QTableWidgetItem("Артем")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(2, 0, item)
+
+        # Устанавливаем "Илья" только для чтения
+        item = QTableWidgetItem("Илья")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(3, 0, item)
 
         # Создаем группы для каждой строки
         self.group1 = QButtonGroup()
@@ -85,6 +118,8 @@ class LogicTable4(QWidget):
 
         # Кнопка проверки
         self.check_btn = QPushButton("Проверить")
+        # Кнопка Сохранения
+        self.save_btn = QPushButton("Сохранить")
 
         # Размещаем в вертикальном layout
         layout = QVBoxLayout()
@@ -96,10 +131,11 @@ class LogicTable4(QWidget):
         table_layout = QHBoxLayout()
         table_layout.addWidget(self.table)
         table_layout.addWidget(self.check_btn)
+        table_layout.addWidget(self.save_btn)
 
         layout.addLayout(table_layout)
 
-        self.resize(550, 260)
+        self.resize(650, 260)
         self.setWindowTitle("Логическая задача")
         self.setLayout(layout)
 
@@ -113,3 +149,14 @@ class LogicTable4(QWidget):
             QMessageBox.information(self, "Результат", "Ответ верный!")
         else:
             QMessageBox.warning(self, "Результат", "Ответ неверный")
+
+    def save_screenshot(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+        file_name, _ = QFileDialog.getSaveFileName(self, "Сохранить скриншот", "",
+                                                   "Images (*.png *.jpg);;All Files (*)", options=options)
+
+        if file_name:
+            screenshot = QPixmap(self.size())
+            self.render(screenshot)
+            screenshot.save(file_name, "PNG")

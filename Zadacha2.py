@@ -1,5 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QRadioButton, QButtonGroup
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QRadioButton, QButtonGroup, QFileDialog
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QTableWidget, QTableWidgetItem,
@@ -14,6 +17,7 @@ class LogicTable2(QWidget):
         self.initUI()
         # При нажатии на кнопку
         self.check_btn.clicked.connect(self.check_answers)
+        self.save_btn.clicked.connect(self.save_screenshot)
 
     def initUI(self):
         # Текст задачи
@@ -40,6 +44,46 @@ class LogicTable2(QWidget):
         self.table.setItem(2, 0, QTableWidgetItem("Лимонад"))
         self.table.setItem(3, 0, QTableWidgetItem("Квас"))
         self.table.setItem(4, 0, QTableWidgetItem("Вода"))
+
+        # Устанавливаем "Белов" только для чтения
+        item = QTableWidgetItem("Бутылка")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 1, item)
+
+        # Устанавливаем "Чернов" только для чтения
+        item = QTableWidgetItem("Стакан")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 2, item)
+
+        # Устанавливаем "Рыжов" только для чтения
+        item = QTableWidgetItem("Кувшин")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 3, item)
+
+        # Устанавливаем "Бутылка" только для чтения
+        item = QTableWidgetItem("Банка")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 4, item)
+
+        # Устанавливаем "Молоко" только для чтения
+        item = QTableWidgetItem("Молоко")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(1, 0, item)
+
+        # Устанавливаем "Лимонад" только для чтения
+        item = QTableWidgetItem("Лимонад")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(2, 0, item)
+
+        # Устанавливаем "Квас" только для чтения
+        item = QTableWidgetItem("Квас")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(3, 0, item)
+
+        # Устанавливаем "Вода" только для чтения
+        item = QTableWidgetItem("Вода")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(4, 0, item)
 
         # Создаем группы для каждой строки
         self.group1 = QButtonGroup()
@@ -119,6 +163,8 @@ class LogicTable2(QWidget):
 
         # Кнопка проверки
         self.check_btn = QPushButton("Проверить")
+        # Кнопка Сохранения
+        self.save_btn = QPushButton("Сохранить")
 
         # Размещаем в вертикальном layout
         layout = QVBoxLayout()
@@ -130,10 +176,11 @@ class LogicTable2(QWidget):
         table_layout = QHBoxLayout()
         table_layout.addWidget(self.table)
         table_layout.addWidget(self.check_btn)
+        table_layout.addWidget(self.save_btn)
 
         layout.addLayout(table_layout)
 
-        self.resize(620, 300)
+        self.resize(720, 320)
         self.setWindowTitle("Логическая задача")
         self.setLayout(layout)
 
@@ -148,4 +195,16 @@ class LogicTable2(QWidget):
             QMessageBox.information(self, "Результат", "Ответ верный!")
         else:
             QMessageBox.warning(self, "Результат", "Ответ неверный")
+
+
+    def save_screenshot(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+        file_name, _ = QFileDialog.getSaveFileName(self, "Сохранить скриншот", "",
+                                                   "Images (*.png *.jpg);;All Files (*)", options=options)
+
+        if file_name:
+            screenshot = QPixmap(self.size())
+            self.render(screenshot)
+            screenshot.save(file_name, "PNG")
 

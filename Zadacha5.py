@@ -1,5 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QRadioButton, QButtonGroup
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QRadioButton, QButtonGroup, QFileDialog
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QTableWidget, QTableWidgetItem,
@@ -14,6 +16,7 @@ class LogicTable5(QWidget):
         self.initUI()
         # При нажатии на кнопку
         self.check_btn.clicked.connect(self.check_answers)
+        self.save_btn.clicked.connect(self.save_screenshot)
 
     def initUI(self):
         # Текст задачи
@@ -41,6 +44,45 @@ class LogicTable5(QWidget):
         self.table.setItem(2, 0, QTableWidgetItem("Петров"))
         self.table.setItem(3, 0, QTableWidgetItem("Марков"))
         self.table.setItem(4, 0, QTableWidgetItem("Карпов"))
+
+        item = QTableWidgetItem("Андрей")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 1, item)
+
+        # Устанавливаем "Сергей" только для чтения
+        item = QTableWidgetItem("Сергей")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 2, item)
+
+        # Устанавливаем "Тимофей" только для чтения
+        item = QTableWidgetItem("Тимофей")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 3, item)
+
+        # Устанавливаем "Алексей" только для чтения
+        item = QTableWidgetItem("Алексей")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(0, 4, item)
+
+        # Устанавливаем "Иванов" только для чтения
+        item = QTableWidgetItem("Иванов")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(1, 0, item)
+
+        # Устанавливаем "Петров" только для чтения
+        item = QTableWidgetItem("Петров")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(2, 0, item)
+
+        # Устанавливаем "Марков" только для чтения
+        item = QTableWidgetItem("Марков")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(3, 0, item)
+
+        # Устанавливаем "Карпов" только для чтения
+        item = QTableWidgetItem("Карпов")
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        self.table.setItem(4, 0, item)
 
         # Создаем группы для каждой строки
         self.group1 = QButtonGroup()
@@ -120,6 +162,8 @@ class LogicTable5(QWidget):
 
         # Кнопка проверки
         self.check_btn = QPushButton("Проверить")
+        # Кнопка Сохранения
+        self.save_btn = QPushButton("Сохранить")
 
         # Размещаем в вертикальном layout
         layout = QVBoxLayout()
@@ -131,10 +175,11 @@ class LogicTable5(QWidget):
         table_layout = QHBoxLayout()
         table_layout.addWidget(self.table)
         table_layout.addWidget(self.check_btn)
+        table_layout.addWidget(self.save_btn)
 
         layout.addLayout(table_layout)
 
-        self.resize(630, 320)
+        self.resize(730, 320)
         self.setWindowTitle("Логическая задача")
         self.setLayout(layout)
 
@@ -149,3 +194,14 @@ class LogicTable5(QWidget):
             QMessageBox.information(self, "Результат", "Ответ верный!")
         else:
             QMessageBox.warning(self, "Результат", "Ответ неверный")
+
+    def save_screenshot(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+        file_name, _ = QFileDialog.getSaveFileName(self, "Сохранить скриншот", "",
+                                                   "Images (*.png *.jpg);;All Files (*)", options=options)
+
+        if file_name:
+            screenshot = QPixmap(self.size())
+            self.render(screenshot)
+            screenshot.save(file_name, "PNG")
